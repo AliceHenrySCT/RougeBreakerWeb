@@ -112,6 +112,8 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 
 // Main Game component
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
+  console.log('Game component rendering with props:', { round, currentScore, lives, extraBalls, difficulty, testMode });
+  
   // Initialize Skia-dependent values inside component
   const resolution = useMemo(() => vec(width, height), []);
   
@@ -138,12 +140,19 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   // Create shader using useMemo to ensure Skia is available
   const shader = useMemo(() => {
     try {
+      console.log('Attempting to create shader...');
       return Skia.RuntimeEffect.Make(shaderSource);
     } catch (error) {
       console.warn('Failed to create shader:', error);
       return null;
     }
   }, []);
+
+  console.log('Game component state:', { 
+    hasShader: !!shader, 
+    hasFonts: !!(fonts.font && fonts.scoreFont && fonts.livesFont),
+    gameEnded: gameEnded.value 
+  });
 
   const brickCount = useSharedValue(0);
   const score = useSharedValue(currentScore);

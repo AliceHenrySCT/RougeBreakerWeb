@@ -187,6 +187,7 @@ export default function PlayTab() {
   };
 
   if (gameState === 'playing') {
+    console.log('Rendering WebCompatibleGame with state:', { gameState, round, currentScore, lives, extraBalls, difficulty, testMode });
     return (
       <WebCompatibleGame 
         onGameEnd={handleGameEnd}
