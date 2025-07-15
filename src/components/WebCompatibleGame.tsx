@@ -3,11 +3,13 @@ import { Platform, View, Text, StyleSheet } from 'react-native';
 import { WithSkiaWeb } from '@shopify/react-native-skia/lib/module/web';
 
 // Web-specific wrapper using WithSkiaWeb for proper WASM loading
-const WebCompatibleGame: React.FC<any> = ({ onTabVisibilityChange = () => {}, ...props }) => {
+const WebCompatibleGame: React.FC<any> = (props) => {
+  const { onTabVisibilityChange = () => {}, onGameEnd = () => {}, ...otherProps } = props;
+
   if (Platform.OS === 'web') {
     return (
       <WithSkiaWeb
-        getComponent={() => import('./Game').then(module => ({ default: (gameProps: any) => <module.default {...gameProps} onTabVisibilityChange={onTabVisibilityChange} /> }))}
+        getComponent={() => import('./Game').then(module => ({ default: (gameProps: any) => <module.default {...props} /> }))}
         fallback={
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Loading graphics...</Text>
@@ -19,7 +21,7 @@ const WebCompatibleGame: React.FC<any> = ({ onTabVisibilityChange = () => {}, ..
 
   // For native platforms, import directly
   const Game = require('./Game').default;
-  return <Game {...props} onTabVisibilityChange={onTabVisibilityChange} />;
+  return <Game {...props} />;
 };
 
 const styles = StyleSheet.create({
