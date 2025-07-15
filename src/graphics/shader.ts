@@ -1,11 +1,9 @@
-import { Skia } from "@shopify/react-native-skia";
-
 // THIS SHADER COMES COURTESY OF P_Malin from ShaderToy
 // SOURCE: https://www.shadertoy.com/view/MdlXWr
 // TWITTER: https://twitter.com/P_Malin
 // YOUTUBE: https://www.youtube.com/@paulmalin2116
 
-export const shader = Skia.RuntimeEffect.Make(`
+export const shaderSource = `
 uniform vec2 iResolution;
 uniform float iTime;
 
@@ -196,4 +194,4 @@ void mainVR( out vec4 fragColor, in vec2 fragCoord, vec3 vRayOrigin, vec3 vRayDi
 	fragColor = vec4(sqrt(vResult),1.0);
 }
 
-`)!;
+`;

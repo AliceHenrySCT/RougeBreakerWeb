@@ -13,11 +13,13 @@ import {
   useClock,
   matchFont,
   vec,
+  Skia,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
   useSharedValue,
   useFrameCallback,
+  useMemo,
 } from 'react-native-reanimated';
 import {
   BRICK_HEIGHT,
@@ -36,7 +38,7 @@ import {
 } from '@/src/constants';
 import { animate, createBouncingExample } from '@/src/utils/physics';
 import { BrickInterface, CircleInterface, PaddleInterface } from '@/src/types';
-import { shader } from '@/src/graphics/shader';
+import { shaderSource } from '@/src/graphics/shader';
 
 // Web-specific dimension handling
 const getScreenDimensions = () => {
@@ -129,6 +131,16 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 
 // Main Game component
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
+  // Create shader using useMemo to ensure Skia is available
+  const shader = useMemo(() => {
+    try {
+      return Skia.RuntimeEffect.Make(shaderSource);
+    } catch (error) {
+      console.warn('Failed to create shader:', error);
+      return null;
+    }
+  }, []);
+
   const brickCount = useSharedValue(0);
   const score = useSharedValue(currentScore);
   const currentLives = useSharedValue(lives);
@@ -574,9 +586,11 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
       <GestureDetector gesture={gesture}>
         <View style={styles.container}>
           <Canvas style={{ flex: 1 }}>
-            <Rect x={0} y={0} width={width} height={height}>
-              <Shader source={shader} uniforms={uniforms} />
-            </Rect>
+            {shader && (
+              <Rect x={0} y={0} width={width} height={height}>
+                <Shader source={shader} uniforms={uniforms} />
+              </Rect>
+            )}
             <Circle
               cx={circleObject.x}
               cy={circleObject.y}
