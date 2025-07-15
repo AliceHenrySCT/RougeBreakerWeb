@@ -13,6 +13,8 @@ import {
   vec,
   Skia,
   Font,
+  Text,
+  useFont,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
@@ -114,6 +116,10 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
+  
+  // Load font for text rendering
+  const font = useFont(require('@expo-google-fonts/inter/Inter_400Regular.ttf'), 16);
+  const boldFont = useFont(require('@expo-google-fonts/inter/Inter_700Bold.ttf'), 16);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
@@ -540,11 +546,9 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
     });
 
   // End-of-game overlay values
-  const roundText = useDerivedValue(() => `Round ${round}`);
-  const livesText = useDerivedValue(() => `Lives: ${currentLives.value}`);
-  
-  // Real-time score display that updates every frame
-  const currentScoreDisplay = useDerivedValue(() => score.value, [score]);
+  const roundText = useDerivedValue(() => `Round ${round}`, [round]);
+  const livesText = useDerivedValue(() => `Lives: ${currentLives.value}`, [currentLives]);
+  const scoreText = useDerivedValue(() => `Score: ${score.value}`, [score]);
   
   const uniforms = useDerivedValue(
     () => ({
@@ -609,14 +613,34 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             {bricks.map((brick, idx) => (
               <Brick key={idx} idx={idx} brick={brick} />
             ))}
+            
+            {/* Skia Text components for real-time updates */}
+            {font && (
+              <>
+                <Text
+                  x={20}
+                  y={60}
+                  text={roundText}
+                  font={font}
+                  color="white"
+                />
+                <Text
+                  x={width / 2 - 40}
+                  y={60}
+                  text={scoreText}
+                  font={boldFont || font}
+                  color="white"
+                />
+                <Text
+                  x={width - 80}
+                  y={60}
+                  text={livesText}
+                  font={font}
+                  color="#FF6B6B"
+                />
+              </>
+            )}
           </Canvas>
-          
-          {/* Use React Native Text instead of Skia Text for web compatibility */}
-          <View style={styles.overlay}>
-            <Text style={[styles.overlayText, styles.scoreText]}>Score: {currentScoreDisplay.value}</Text>
-            <Text style={[styles.overlayText, styles.roundText]}>{`Round ${round}`}</Text>
-            <Text style={[styles.overlayText, styles.livesText]}>{`Lives: ${currentLives.value}`}</Text>
-          </View>
         </View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -631,35 +655,6 @@ const styles = StyleSheet.create({
     height: height,
     alignSelf: 'center',
     aspectRatio: ASPECT_RATIO,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    pointerEvents: 'none',
-  },
-  overlayText: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 16,
-  },
-  scoreText: {
-    color: 'white',
-    position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: -40 }],
-  },
-  roundText: {
-    color: 'white',
-  },
-  livesText: {
-    color: '#FF6B6B',
   },
 });
 
