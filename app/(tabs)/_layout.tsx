@@ -81,3 +81,42 @@ export default function TabLayout() {
       </View>
     </TabVisibilityContext.Provider>
   );
+}
+
+const styles = StyleSheet.create({
+  webContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100vw',
+    height: '100vh',
+  },
+  nativeContainer: {
+    flex: 1,
+  },
+});
+
+// Apply consistent sizing for web
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    #root {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background-color: #000 !important;
+    }
+    
+    #root > div {
+      width: ${width}px !important;
+      height: ${height}px !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      background-color: #000 !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
