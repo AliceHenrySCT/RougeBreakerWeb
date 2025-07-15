@@ -2,10 +2,10 @@ import { Dimensions, Platform } from "react-native";
 
 // Fixed aspect ratio for consistent gameplay across all devices
 const FIXED_ASPECT_RATIO = 9 / 16; // Width to height ratio (mobile portrait)
-const TARGET_WIDTH = 400; // Base width for calculations
-const TARGET_HEIGHT = TARGET_WIDTH / FIXED_ASPECT_RATIO; // ~711
+const MIN_WIDTH = 400; // Minimum width for gameplay
+const MIN_HEIGHT = MIN_WIDTH / FIXED_ASPECT_RATIO; // ~711
 
-// Web-compatible dimension handling with fixed aspect ratio
+// Web-compatible dimension handling with scalable fixed aspect ratio
 const getScreenDimensions = () => {
   if (Platform.OS === 'web') {
     if (typeof window !== 'undefined') {
@@ -17,12 +17,24 @@ const getScreenDimensions = () => {
       
       if (windowWidth / windowHeight > FIXED_ASPECT_RATIO) {
         // Window is wider than target ratio, constrain by height
-        height = Math.min(windowHeight, TARGET_HEIGHT);
+        height = Math.max(windowHeight, MIN_HEIGHT);
         width = height * FIXED_ASPECT_RATIO;
+        
+        // Ensure we meet minimum width requirement
+        if (width < MIN_WIDTH) {
+          width = MIN_WIDTH;
+          height = width / FIXED_ASPECT_RATIO;
+        }
       } else {
         // Window is taller than target ratio, constrain by width
-        width = Math.min(windowWidth, TARGET_WIDTH);
+        width = Math.max(windowWidth, MIN_WIDTH);
         height = width / FIXED_ASPECT_RATIO;
+        
+        // Ensure we meet minimum height requirement
+        if (height < MIN_HEIGHT) {
+          height = MIN_HEIGHT;
+          width = height * FIXED_ASPECT_RATIO;
+        }
       }
       
       return {
@@ -31,8 +43,8 @@ const getScreenDimensions = () => {
       };
     }
     return {
-      width: TARGET_WIDTH,
-      height: TARGET_HEIGHT,
+      width: MIN_WIDTH,
+      height: MIN_HEIGHT,
     };
   }
   
@@ -45,12 +57,24 @@ const getScreenDimensions = () => {
   
   if (screenWidth / screenHeight > FIXED_ASPECT_RATIO) {
     // Screen is wider than target ratio, constrain by height
-    height = screenHeight;
+    height = Math.max(screenHeight, MIN_HEIGHT);
     width = height * FIXED_ASPECT_RATIO;
+    
+    // Ensure we meet minimum width requirement
+    if (width < MIN_WIDTH) {
+      width = MIN_WIDTH;
+      height = width / FIXED_ASPECT_RATIO;
+    }
   } else {
     // Screen is taller than target ratio, constrain by width
-    width = screenWidth;
+    width = Math.max(screenWidth, MIN_WIDTH);
     height = width / FIXED_ASPECT_RATIO;
+    
+    // Ensure we meet minimum height requirement
+    if (height < MIN_HEIGHT) {
+      height = MIN_HEIGHT;
+      width = height * FIXED_ASPECT_RATIO;
+    }
   }
   
   return {
