@@ -13,7 +13,7 @@ import {
   vec,
   Skia,
   Font,
-  Text,
+  Text as SkiaText,
   useFont,
 } from '@shopify/react-native-skia';
 import {
@@ -617,21 +617,21 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             {/* Skia Text components for real-time updates */}
             {font && (
               <>
-                <Text
+                <SkiaText
                   x={20}
                   y={60}
                   text={roundText}
                   font={font}
                   color="white"
                 />
-                <Text
+                <SkiaText
                   x={width / 2 - 40}
                   y={60}
                   text={scoreText}
                   font={boldFont || font}
                   color="white"
                 />
-                <Text
+                <SkiaText
                   x={width - 80}
                   y={60}
                   text={livesText}
