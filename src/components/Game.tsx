@@ -539,18 +539,10 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
     });
 
   // End-of-game overlay values
-  const scoreText = useDerivedValue(
-    () => `Score: ${score.value}`,
-    [score]
-  );
-  const roundText = useDerivedValue(
-    () => `Round ${round}`,
-    [round]
-  );
-  const livesText = useDerivedValue(
-    () => `Lives: ${currentLives.value}`,
-    [currentLives]
-  );
+  const scoreText = useDerivedValue(() => `Score: ${score.value}`);
+  const roundText = useDerivedValue(() => `Round ${round}`);
+  const livesText = useDerivedValue(() => `Lives: ${currentLives.value}`);
+  
   const uniforms = useDerivedValue(
     () => ({
       iResolution: resolution,
@@ -618,9 +610,9 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
           
           {/* Use React Native Text instead of Skia Text for web compatibility */}
           <View style={styles.overlay}>
-            <Text style={[styles.overlayText, styles.scoreText]}>{scoreText.value}</Text>
-            <Text style={[styles.overlayText, styles.roundText]}>{roundText.value}</Text>
-            <Text style={[styles.overlayText, styles.livesText]}>{livesText.value}</Text>
+            <Text style={[styles.overlayText, styles.scoreText]}>{`Score: ${score.value}`}</Text>
+            <Text style={[styles.overlayText, styles.roundText]}>{`Round ${round}`}</Text>
+            <Text style={[styles.overlayText, styles.livesText]}>{`Lives: ${currentLives.value}`}</Text>
           </View>
         </View>
       </GestureDetector>
