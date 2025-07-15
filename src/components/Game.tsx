@@ -118,8 +118,8 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   const resolution = useMemo(() => vec(width, height), []);
   
   // Load font for text rendering
-  const font = useFont(require('@expo-google-fonts/inter/Inter_400Regular.ttf'), 16);
-  const boldFont = useFont(require('@expo-google-fonts/inter/Inter_700Bold.ttf'), 16);
+  const font = useFont(require('@expo-google-fonts/inter/files/Inter_400Regular.ttf'), 16);
+  const boldFont = useFont(require('@expo-google-fonts/inter/files/Inter_700Bold.ttf'), 16);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
