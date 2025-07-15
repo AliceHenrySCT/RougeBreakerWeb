@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Trophy, RotateCcw } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { width, height, ASPECT_RATIO } from '@/src/constants';
 
 interface ScoreEntry {
   score: number;
@@ -118,6 +119,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     paddingTop: 60,
     paddingHorizontal: 20,
+    width: width,
+    height: height,
+    alignSelf: 'center',
+    aspectRatio: ASPECT_RATIO,
   },
   header: {
     flexDirection: 'row',

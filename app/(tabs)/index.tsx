@@ -9,6 +9,7 @@ import { useTabVisibility } from './_layout';
 import { Zap, Shield, Circle } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { width, height, ASPECT_RATIO } from '@/src/constants';
 
 type PowerUp = 'speed' | 'shield' | 'extraBall' | null;
 
@@ -353,6 +354,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
+    width: width,
+    height: height,
+    alignSelf: 'center',
+    aspectRatio: ASPECT_RATIO,
   },
   title: {
     fontSize: 48,

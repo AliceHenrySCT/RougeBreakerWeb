@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Settings as SettingsIcon } from 'lucide-react-native';
+import { width, height, ASPECT_RATIO } from '@/src/constants';
 
 export default function SettingsTab() {
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard'>('normal');
@@ -112,6 +113,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    width: width,
+    height: height,
+    alignSelf: 'center',
+    aspectRatio: ASPECT_RATIO,
   },
   contentContainer: {
     paddingTop: 60,

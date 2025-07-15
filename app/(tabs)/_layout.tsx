@@ -4,7 +4,7 @@ import { Play, Trophy, Settings } from 'lucide-react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { width, height } from '@/src/constants';
+import { width, height, ASPECT_RATIO } from '@/src/constants';
 
 // Create context for tab visibility
 const TabVisibilityContext = createContext<{
@@ -86,13 +86,18 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   webContainer: {
     flex: 1,
-    width: width,
-    height: height,
+    width: Platform.OS === 'web' ? width : '100%',
+    height: Platform.OS === 'web' ? height : '100%',
+    maxWidth: width,
+    maxHeight: height,
     alignSelf: 'center',
     backgroundColor: '#000',
+    aspectRatio: ASPECT_RATIO,
   },
   nativeContainer: {
     flex: 1,
     backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -33,6 +33,7 @@ import {
   width,
   RADIUS,
   MAX_SPEED,
+  ASPECT_RATIO,
 } from '@/src/constants';
 import { animate, createBouncingExample } from '@/src/utils/physics';
 import { BrickInterface, CircleInterface, PaddleInterface } from '@/src/types';
@@ -621,7 +622,14 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black' },
+  container: { 
+    flex: 1, 
+    backgroundColor: 'black',
+    width: width,
+    height: height,
+    alignSelf: 'center',
+    aspectRatio: ASPECT_RATIO,
+  },
   overlay: {
     position: 'absolute',
     top: 0,

@@ -1,6 +1,6 @@
 import { Dimensions, Platform } from "react-native";
 import { SharedValue } from "react-native-reanimated";
-import { MAX_SPEED, PADDLE_HEIGHT, PADDLE_WIDTH, RADIUS, BRICK_WIDTH, BRICK_HEIGHT } from "@/src/constants";
+import { MAX_SPEED, PADDLE_HEIGHT, PADDLE_WIDTH, RADIUS, BRICK_WIDTH, BRICK_HEIGHT, width, height } from "@/src/constants";
 import {
   BrickInterface,
   CircleInterface,
@@ -8,11 +8,6 @@ import {
   PaddleInterface,
   ShapeInterface,
 } from "@/src/types";
-
-// Import dimensions from constants for consistency
-import { width, height } from "@/src/constants";
-
-// Use imported dimensions for consistency across the app
 
 const move = (object: ShapeInterface, dt: number, maxSpeed: number) => {
   "worklet";
