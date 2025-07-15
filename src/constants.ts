@@ -2,13 +2,20 @@ import { Dimensions, Platform } from "react-native";
 
 // Web-compatible dimension handling
 const getScreenDimensions = () => {
+  const screenDimensions = Dimensions.get("screen");
   if (Platform.OS === 'web') {
+    if (typeof window !== 'undefined') {
+      return {
+        width: Math.min(window.innerWidth, 400), // Cap width for better web experience
+        height: Math.min(window.innerHeight, 800), // Cap height for better web experience
+      };
+    }
     return {
-      width: Math.min(window.innerWidth, 400), // Cap width for better web experience
-      height: Math.min(window.innerHeight, 800), // Cap height for better web experience
+      width: Math.min(screenDimensions.width, 400),
+      height: Math.min(screenDimensions.height, 800),
     };
   }
-  return Dimensions.get("screen");
+  return screenDimensions;
 };
 
 const { height: windowHeight, width: windowWidth } = getScreenDimensions();
