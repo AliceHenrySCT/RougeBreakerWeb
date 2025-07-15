@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Platform, View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { Platform, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -9,10 +9,10 @@ import {
   Rect,
   RoundedRect,
   Shader,
-  Text as SkiaText,
   useClock,
   vec,
   Skia,
+  Font,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
@@ -114,15 +114,28 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
   
-  // Create fonts inside component after Skia is ready
+  // Create fonts without using matchFont (not supported on web)
   const fonts = useMemo(() => {
-    const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
-    const { matchFont } = require('@shopify/react-native-skia');
-    return {
-      font: matchFont({ fontFamily, fontSize: 32 }),
-      scoreFont: matchFont({ fontFamily, fontSize: 16 }),
-      livesFont: matchFont({ fontFamily, fontSize: 16 }),
-    };
+    try {
+      // Use Skia.Font.MakeFreeTypeFaceFromData or create simple fonts
+      // For web compatibility, we'll use a simpler approach
+      const fontMgr = Skia.FontMgr.System();
+      const typeface = fontMgr.matchFamilyStyle('Arial', { weight: 400 });
+      
+      return {
+        font: Skia.Font(typeface, 32),
+        scoreFont: Skia.Font(typeface, 16),
+        livesFont: Skia.Font(typeface, 16),
+      };
+    } catch (error) {
+      console.warn('Font creation failed, using fallback:', error);
+      // Fallback: create fonts without typeface
+      return {
+        font: Skia.Font(null, 32),
+        scoreFont: Skia.Font(null, 16),
+        livesFont: Skia.Font(null, 16),
+      };
+    }
   }, []);
   
   // Create shader - now safe since CanvasKit is loaded
@@ -625,28 +638,14 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             {bricks.map((brick, idx) => (
               <Brick key={idx} idx={idx} brick={brick} />
             ))}
-            <SkiaText
-              x={width / 2 - 40}
-              y={60}
-              text={scoreText}
-              font={fonts.scoreFont}
-              color="white"
-            />
-            <SkiaText
-              x={20}
-              y={60}
-              text={roundText}
-              font={fonts.scoreFont}
-              color="white"
-            />
-            <SkiaText
-              x={width - 80}
-              y={60}
-              text={livesText}
-              font={fonts.livesFont}
-              color="#FF6B6B"
-            />
           </Canvas>
+          
+          {/* Use React Native Text instead of Skia Text for web compatibility */}
+          <View style={styles.overlay}>
+            <Text style={[styles.overlayText, styles.scoreText]}>{scoreText.value}</Text>
+            <Text style={[styles.overlayText, styles.roundText]}>{roundText.value}</Text>
+            <Text style={[styles.overlayText, styles.livesText]}>{livesText.value}</Text>
+          </View>
         </View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -655,6 +654,35 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'black' },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 80,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    pointerEvents: 'none',
+  },
+  overlayText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+  },
+  scoreText: {
+    color: 'white',
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -40 }],
+  },
+  roundText: {
+    color: 'white',
+  },
+  livesText: {
+    color: '#FF6B6B',
+  },
 });
 
 export default Game;
