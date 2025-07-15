@@ -540,9 +540,11 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
     });
 
   // End-of-game overlay values
-  const scoreText = useDerivedValue(() => `Score: ${score.value}`);
   const roundText = useDerivedValue(() => `Round ${round}`);
   const livesText = useDerivedValue(() => `Lives: ${currentLives.value}`);
+  
+  // Real-time score display that updates every frame
+  const currentScoreDisplay = useDerivedValue(() => score.value, [score]);
   
   const uniforms = useDerivedValue(
     () => ({
@@ -611,7 +613,7 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
           
           {/* Use React Native Text instead of Skia Text for web compatibility */}
           <View style={styles.overlay}>
-            <Text style={[styles.overlayText, styles.scoreText]}>{`Score: ${score.value}`}</Text>
+            <Text style={[styles.overlayText, styles.scoreText]}>Score: {currentScoreDisplay.value}</Text>
             <Text style={[styles.overlayText, styles.roundText]}>{`Round ${round}`}</Text>
             <Text style={[styles.overlayText, styles.livesText]}>{`Lives: ${currentLives.value}`}</Text>
           </View>
