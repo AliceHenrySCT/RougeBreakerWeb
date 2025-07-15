@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Platform, View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -37,6 +37,17 @@ import {
 import { animate, createBouncingExample } from '@/src/utils/physics';
 import { BrickInterface, CircleInterface, PaddleInterface } from '@/src/types';
 import { shader } from '@/src/graphics/shader';
+
+// Web-specific dimension handling
+const getScreenDimensions = () => {
+  if (Platform.OS === 'web') {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+  }
+  return Dimensions.get('screen');
+};
 
 interface GameProps {
   onGameEnd: (score: number, won: boolean) => void;

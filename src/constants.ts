@@ -1,6 +1,17 @@
-import { Dimensions } from "react-native";
+import { Dimensions, Platform } from "react-native";
 
-const { height: windowHeight, width: windowWidth } = Dimensions.get("screen");
+// Web-compatible dimension handling
+const getScreenDimensions = () => {
+  if (Platform.OS === 'web') {
+    return {
+      width: Math.min(window.innerWidth, 400), // Cap width for better web experience
+      height: Math.min(window.innerHeight, 800), // Cap height for better web experience
+    };
+  }
+  return Dimensions.get("screen");
+};
+
+const { height: windowHeight, width: windowWidth } = getScreenDimensions();
 
 export const BALL_COLOR = "#d1d5db"; // Light grey color
 

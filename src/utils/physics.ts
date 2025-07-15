@@ -1,6 +1,5 @@
-import { Dimensions } from "react-native";
+import { Dimensions, Platform } from "react-native";
 import { SharedValue } from "react-native-reanimated";
-import { Platform } from "react-native";
 import { MAX_SPEED, PADDLE_HEIGHT, PADDLE_WIDTH, RADIUS, BRICK_WIDTH, BRICK_HEIGHT } from "@/src/constants";
 import {
   BrickInterface,
@@ -10,7 +9,18 @@ import {
   ShapeInterface,
 } from "@/src/types";
 
-const { width, height } = Dimensions.get("window");
+// Web-compatible dimension handling
+const getWindowDimensions = () => {
+  if (Platform.OS === 'web') {
+    return {
+      width: Math.min(window.innerWidth, 400),
+      height: Math.min(window.innerHeight, 800),
+    };
+  }
+  return Dimensions.get("window");
+};
+
+const { width, height } = getWindowDimensions();
 
 const move = (object: ShapeInterface, dt: number, maxSpeed: number) => {
   "worklet";

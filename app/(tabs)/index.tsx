@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Canvas } from '@shopify/react-native-skia';
-import Game from '@/src/components/Game';
+import WebCompatibleGame from '@/src/components/WebCompatibleGame';
 import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -188,7 +188,7 @@ export default function PlayTab() {
 
   if (gameState === 'playing') {
     return (
-      <Game 
+      <WebCompatibleGame 
         onGameEnd={handleGameEnd}
         round={round}
         currentScore={currentScore}
