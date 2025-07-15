@@ -11,7 +11,6 @@ import {
   Shader,
   Text as SkiaText,
   useClock,
-  matchFont,
   vec,
   Skia,
 } from '@shopify/react-native-skia';
@@ -40,17 +39,6 @@ import { animate, createBouncingExample } from '@/src/utils/physics';
 import { BrickInterface, CircleInterface, PaddleInterface } from '@/src/types';
 import { shaderSource } from '@/src/graphics/shader';
 
-// Web-specific dimension handling
-const getScreenDimensions = () => {
-  if (Platform.OS === 'web') {
-    return {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-  }
-  return Dimensions.get('screen');
-};
-
 interface GameProps {
   onGameEnd: (score: number, won: boolean) => void;
   round: number;
@@ -64,13 +52,6 @@ interface GameProps {
   difficulty: 'easy' | 'normal' | 'hard';
   testMode: boolean;
 }
-
-const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
-const fontStyle = { fontFamily, fontSize: 32};
-const font = matchFont(fontStyle);
-const scoreFont = matchFont({ fontFamily, fontSize: 16 });
-const livesFont = matchFont({ fontFamily, fontSize: 16 });
-const resolution = vec(width, height);
 
 // Helper function to calculate row color gradient
 const getRowColor = (rowIndex: number, totalRows: number) => {
@@ -131,6 +112,29 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 
 // Main Game component
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
+  // Initialize Skia-dependent values inside component
+  const resolution = useMemo(() => vec(width, height), []);
+  
+  // Create fonts inside component after Skia is ready
+  const fonts = useMemo(() => {
+    try {
+      const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
+      const { matchFont } = require('@shopify/react-native-skia');
+      return {
+        font: matchFont({ fontFamily, fontSize: 32 }),
+        scoreFont: matchFont({ fontFamily, fontSize: 16 }),
+        livesFont: matchFont({ fontFamily, fontSize: 16 }),
+      };
+    } catch (error) {
+      console.warn('Failed to create fonts:', error);
+      return {
+        font: null,
+        scoreFont: null,
+        livesFont: null,
+      };
+    }
+  }, []);
+  
   // Create shader using useMemo to ensure Skia is available
   const shader = useMemo(() => {
     try {
@@ -642,21 +646,21 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
               x={width / 2 - 40}
               y={60}
               text={scoreText}
-              font={scoreFont}
+              font={fonts.scoreFont}
               color="white"
             />
             <SkiaText
               x={20}
               y={60}
               text={roundText}
-              font={scoreFont}
+              font={fonts.scoreFont}
               color="white"
             />
             <SkiaText
               x={width - 80}
               y={60}
               text={livesText}
-              font={livesFont}
+              font={fonts.livesFont}
               color="#FF6B6B"
             />
           </Canvas>
