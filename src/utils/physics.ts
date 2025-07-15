@@ -9,25 +9,10 @@ import {
   ShapeInterface,
 } from "@/src/types";
 
-// Web-compatible dimension handling
-const getWindowDimensions = () => {
-  const windowDimensions = Dimensions.get("window");
-  if (Platform.OS === 'web') {
-    if (typeof window !== 'undefined') {
-      return {
-        width: Math.min(window.innerWidth, 400),
-        height: Math.min(window.innerHeight, 800),
-      };
-    }
-    return {
-      width: Math.min(windowDimensions.width, 400),
-      height: Math.min(windowDimensions.height, 800),
-    };
-  }
-  return windowDimensions;
-};
+// Import dimensions from constants for consistency
+import { width, height } from "@/src/constants";
 
-const { width, height } = getWindowDimensions();
+// Use imported dimensions for consistency across the app
 
 const move = (object: ShapeInterface, dt: number, maxSpeed: number) => {
   "worklet";

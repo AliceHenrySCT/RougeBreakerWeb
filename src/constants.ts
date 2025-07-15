@@ -1,18 +1,37 @@
 import { Dimensions, Platform } from "react-native";
 
-// Web-compatible dimension handling
+// Web-compatible dimension handling with consistent aspect ratio
 const getScreenDimensions = () => {
   const screenDimensions = Dimensions.get("screen");
   if (Platform.OS === 'web') {
     if (typeof window !== 'undefined') {
+      // Target aspect ratio (width:height = 1:2, like a mobile phone)
+      const targetAspectRatio = 0.5; // width / height
+      
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      
+      // Calculate dimensions that fit within the window while maintaining aspect ratio
+      let width, height;
+      
+      if (windowWidth / windowHeight > targetAspectRatio) {
+        // Window is wider than target ratio, constrain by height
+        height = windowHeight;
+        width = height * targetAspectRatio;
+      } else {
+        // Window is taller than target ratio, constrain by width
+        width = windowWidth;
+        height = width / targetAspectRatio;
+      }
+      
       return {
-        width: Math.min(window.innerWidth, 400), // Cap width for better web experience
-        height: Math.min(window.innerHeight, 800), // Cap height for better web experience
+        width: Math.floor(width),
+        height: Math.floor(height),
       };
     }
     return {
-      width: Math.min(screenDimensions.width, 400),
-      height: Math.min(screenDimensions.height, 800),
+      width: 400,
+      height: 800,
     };
   }
   return screenDimensions;

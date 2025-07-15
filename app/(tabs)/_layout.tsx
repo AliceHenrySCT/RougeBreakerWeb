@@ -2,7 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { Play, Trophy, Settings } from 'lucide-react-native';
 import * as NavigationBar from 'expo-navigation-bar';
-import { useEffect } from 'react';
+import { useEffect, Platform } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { width, height } from '@/src/constants';
 
 // Create context for tab visibility
 const TabVisibilityContext = createContext<{
@@ -36,45 +38,46 @@ export default function TabLayout() {
   }, [tabsVisible]);
   return (
     <TabVisibilityContext.Provider value={{ tabsVisible, setTabsVisible }}>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: '#000',
-            borderTopColor: '#333',
-            display: tabsVisible ? 'flex' : 'none',
-          },
-          tabBarActiveTintColor: '#6200EE',
-          tabBarInactiveTintColor: '#666',
-        }}>
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Play',
-            tabBarIcon: ({ size, color }) => (
-              <Play size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="leaderboard"
-          options={{
-            title: 'Scores',
-            tabBarIcon: ({ size, color }) => (
-              <Trophy size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ size, color }) => (
-              <Settings size={size} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
+      <View style={Platform.OS === 'web' ? styles.webContainer : styles.nativeContainer}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: '#000',
+              borderTopColor: '#333',
+              display: tabsVisible ? 'flex' : 'none',
+            },
+            tabBarActiveTintColor: '#6200EE',
+            tabBarInactiveTintColor: '#666',
+          }}>
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: 'Play',
+              tabBarIcon: ({ size, color }) => (
+                <Play size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="leaderboard"
+            options={{
+              title: 'Scores',
+              tabBarIcon: ({ size, color }) => (
+                <Trophy size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: 'Settings',
+              tabBarIcon: ({ size, color }) => (
+                <Settings size={size} color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </View>
     </TabVisibilityContext.Provider>
   );
-}
