@@ -147,12 +147,6 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
     }
   }, []);
 
-  console.log('Game component state:', { 
-    hasShader: !!shader, 
-    hasFonts: !!(fonts.font && fonts.scoreFont && fonts.livesFont),
-    gameEnded: gameEnded.value 
-  });
-
   const brickCount = useSharedValue(0);
   const score = useSharedValue(currentScore);
   const currentLives = useSharedValue(lives);
@@ -167,6 +161,12 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   const newLivesCount = useSharedValue(0);
   const requiredBricks = useSharedValue(testMode ? 10 : TOTAL_BRICKS);
   
+  console.log('Game component state:', { 
+    hasShader: !!shader, 
+    hasFonts: !!(fonts.font && fonts.scoreFont && fonts.livesFont),
+    gameEnded: gameEnded.value 
+  });
+
   // Score multiplier based on difficulty
   // Score multiplier based on difficulty
   const scoreMultiplier = useSharedValue(1.0);
