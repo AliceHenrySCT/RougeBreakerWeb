@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { Play, Trophy, Settings } from 'lucide-react-native';
 import * as NavigationBar from 'expo-navigation-bar';
-import { useEffect, Platform } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { width, height } from '@/src/constants';
 
 // Create context for tab visibility
@@ -82,3 +82,17 @@ export default function TabLayout() {
     </TabVisibilityContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  webContainer: {
+    flex: 1,
+    width: width,
+    height: height,
+    alignSelf: 'center',
+    backgroundColor: '#000',
+  },
+  nativeContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+});
