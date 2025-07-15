@@ -114,30 +114,6 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
   
-  // Create fonts without using matchFont (not supported on web)
-  const fonts = useMemo(() => {
-    try {
-      // Use Skia.Font.MakeFreeTypeFaceFromData or create simple fonts
-      // For web compatibility, we'll use a simpler approach
-      const fontMgr = Skia.FontMgr.System();
-      const typeface = fontMgr.matchFamilyStyle('Arial', { weight: 400 });
-      
-      return {
-        font: Skia.Font(typeface, 32),
-        scoreFont: Skia.Font(typeface, 16),
-        livesFont: Skia.Font(typeface, 16),
-      };
-    } catch (error) {
-      console.warn('Font creation failed, using fallback:', error);
-      // Fallback: create fonts without typeface
-      return {
-        font: Skia.Font(null, 32),
-        scoreFont: Skia.Font(null, 16),
-        livesFont: Skia.Font(null, 16),
-      };
-    }
-  }, []);
-  
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
     return Skia.RuntimeEffect.Make(shaderSource);
