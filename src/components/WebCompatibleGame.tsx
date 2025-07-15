@@ -1,54 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Platform, View, Text, StyleSheet } from 'react-native';
-import Game from './Game';
+import { WithSkiaWeb } from '@shopify/react-native-skia/lib/module/web';
 
-// Web-specific wrapper to handle platform differences
+// Web-specific wrapper using WithSkiaWeb for proper WASM loading
 const WebCompatibleGame: React.FC<any> = (props) => {
-  const [isReady, setIsReady] = useState(Platform.OS !== 'web');
-  const [isLoading, setIsLoading] = useState(Platform.OS === 'web');
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      // For web, we need to ensure Skia is ready
-      const checkSkiaReady = async () => {
-        try {
-          // Try to import Skia and check if it's available
-          const { Skia } = await import('@shopify/react-native-skia');
-          
-          if (Skia && typeof Skia.RuntimeEffect !== 'undefined') {
-            console.log('Skia is ready');
-            setIsReady(true);
-            setIsLoading(false);
-          } else {
-            // If Skia isn't ready, try again after a short delay
-            setTimeout(checkSkiaReady, 100);
-          }
-        } catch (error) {
-          console.warn('Skia not ready yet, retrying...', error);
-          setTimeout(checkSkiaReady, 100);
+  if (Platform.OS === 'web') {
+    return (
+      <WithSkiaWeb
+        getComponent={() => import('./Game')}
+        fallback={
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading graphics...</Text>
+          </View>
         }
-      };
-      
-      checkSkiaReady();
-    }
-  }, []);
-
-  if (Platform.OS === 'web' && isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading Game...</Text>
-      </View>
+      />
     );
   }
 
-  if (!isReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Initializing...</Text>
-      </View>
-    );
-  }
-
+  // For native platforms, import directly
+  const Game = require('./Game').default;
   return <Game {...props} />;
 };
 

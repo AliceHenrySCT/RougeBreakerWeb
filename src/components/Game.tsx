@@ -111,40 +111,23 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 
 // Main Game component
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
-  console.log('Game component rendering with props:', { round, currentScore, lives, extraBalls, difficulty, testMode });
-  
-  // Initialize Skia-dependent values inside component
+  // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
   
   // Create fonts inside component after Skia is ready
   const fonts = useMemo(() => {
-    try {
-      const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
-      const { matchFont } = require('@shopify/react-native-skia');
-      return {
-        font: matchFont({ fontFamily, fontSize: 32 }),
-        scoreFont: matchFont({ fontFamily, fontSize: 16 }),
-        livesFont: matchFont({ fontFamily, fontSize: 16 }),
-      };
-    } catch (error) {
-      console.warn('Failed to create fonts:', error);
-      return {
-        font: null,
-        scoreFont: null,
-        livesFont: null,
-      };
-    }
+    const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
+    const { matchFont } = require('@shopify/react-native-skia');
+    return {
+      font: matchFont({ fontFamily, fontSize: 32 }),
+      scoreFont: matchFont({ fontFamily, fontSize: 16 }),
+      livesFont: matchFont({ fontFamily, fontSize: 16 }),
+    };
   }, []);
   
-  // Create shader using useMemo to ensure Skia is available
+  // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
-    try {
-      console.log('Attempting to create shader...');
-      return Skia.RuntimeEffect.Make(shaderSource);
-    } catch (error) {
-      console.warn('Failed to create shader:', error);
-      return null;
-    }
+    return Skia.RuntimeEffect.Make(shaderSource);
   }, []);
 
   const brickCount = useSharedValue(0);
@@ -160,12 +143,6 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   const shouldUpdateLives = useSharedValue(false);
   const newLivesCount = useSharedValue(0);
   const requiredBricks = useSharedValue(testMode ? 10 : TOTAL_BRICKS);
-  
-  console.log('Game component state:', { 
-    hasShader: !!shader, 
-    hasFonts: !!(fonts.font && fonts.scoreFont && fonts.livesFont),
-    gameEnded: gameEnded.value 
-  });
 
   // Score multiplier based on difficulty
   // Score multiplier based on difficulty
@@ -598,11 +575,9 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
       <GestureDetector gesture={gesture}>
         <View style={styles.container}>
           <Canvas style={{ flex: 1 }}>
-            {shader && (
-              <Rect x={0} y={0} width={width} height={height}>
-                <Shader source={shader} uniforms={uniforms} />
-              </Rect>
-            )}
+            <Rect x={0} y={0} width={width} height={height}>
+              <Shader source={shader} uniforms={uniforms} />
+            </Rect>
             <Circle
               cx={circleObject.x}
               cy={circleObject.y}
