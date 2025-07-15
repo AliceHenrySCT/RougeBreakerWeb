@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Platform, View, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,7 +18,6 @@ import {
   useDerivedValue,
   useSharedValue,
   useFrameCallback,
-  useMemo,
 } from 'react-native-reanimated';
 import {
   BRICK_HEIGHT,
