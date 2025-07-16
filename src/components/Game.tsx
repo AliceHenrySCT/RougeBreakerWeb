@@ -579,6 +579,9 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             </Circle>
             {/* Render extra balls */}
             {allExtraBalls.map((extraBall, index) => (
+              )
+              )
+              }
               <Circle
                 key={`extra-${index}`}
                 cx={extraBall.x}
