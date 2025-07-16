@@ -14,7 +14,7 @@ import {
   Skia,
   Font,
   Text as SkiaText,
-  useFont,
+  matchFont,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
@@ -117,9 +117,32 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
   
-  // Load font for text rendering
-  const font = useFont(null, 16);
-  const boldFont = useFont(null, 16);
+  // Create fonts using matchFont for better web compatibility
+  const font = useMemo(() => {
+    try {
+      return matchFont({
+        fontFamily: Platform.OS === 'web' ? 'system-ui, -apple-system, sans-serif' : 'Inter-Regular',
+        fontSize: 16,
+        fontWeight: 'normal',
+      });
+    } catch (error) {
+      console.warn('Failed to create regular font, using fallback');
+      return null;
+    }
+  }, []);
+  
+  const boldFont = useMemo(() => {
+    try {
+      return matchFont({
+        fontFamily: Platform.OS === 'web' ? 'system-ui, -apple-system, sans-serif' : 'Inter-Bold',
+        fontSize: 16,
+        fontWeight: 'bold',
+      });
+    } catch (error) {
+      console.warn('Failed to create bold font, using fallback');
+      return null;
+    }
+  }, []);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
@@ -615,13 +638,13 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             ))}
             
             {/* Skia Text components for real-time updates */}
-            {font && (
+            {(font || boldFont) && (
               <>
                 <SkiaText
                   x={20}
                   y={60}
                   text={roundText}
-                  font={font}
+                  font={font || boldFont}
                   color="white"
                 />
                 <SkiaText
@@ -635,7 +658,31 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
                   x={width - 80}
                   y={60}
                   text={livesText}
-                  font={font}
+                  font={font || boldFont}
+                  color="#FF6B6B"
+                />
+              </>
+            )}
+            
+            {/* Fallback text rendering if fonts fail to load */}
+            {!font && !boldFont && (
+              <>
+                <SkiaText
+                  x={20}
+                  y={60}
+                  text={roundText}
+                  color="white"
+                />
+                <SkiaText
+                  x={width / 2 - 40}
+                  y={60}
+                  text={scoreText}
+                  color="white"
+                />
+                <SkiaText
+                  x={width - 80}
+                  y={60}
+                  text={livesText}
                   color="#FF6B6B"
                 />
               </>
