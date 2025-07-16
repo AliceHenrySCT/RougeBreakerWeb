@@ -12,8 +12,6 @@ import {
   useClock,
   vec,
   Skia,
-  Text as SkiaText,
-  matchFont,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
@@ -116,16 +114,6 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
-  
-  // Create font using system font matching
-  const font = useMemo(() => {
-    return matchFont({
-      fontFamily: Platform.OS === 'ios' ? 'Helvetica' : 'Arial',
-      fontSize: 16,
-      fontStyle: 'normal',
-      fontWeight: 'bold',
-    });
-  }, []);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
@@ -556,6 +544,19 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   const livesText = useDerivedValue(() => `Lives: ${currentLives.value}`, [currentLives]);
   const scoreText = useDerivedValue(() => `Score: ${score.value}`, [score]);
   
+  // Create array for life indicator circles
+  const lifeCircles = useDerivedValue(() => {
+    const circles = [];
+    for (let i = 0; i < currentLives.value; i++) {
+      circles.push({
+        x: width - 30 - (i * 25), // Position from right edge, spaced 25px apart
+        y: 30, // Top of screen
+        key: `life-${i}`
+      });
+    }
+    return circles;
+  }, [currentLives]);
+  
   const uniforms = useDerivedValue(
     () => ({
       iResolution: resolution,
@@ -574,37 +575,26 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
               <Shader source={shader} uniforms={uniforms} />
             </Rect>
             
-            {/* Game UI Text - rendered within Skia Canvas */}
-            {font && (
-              <>
-                {/* Round text - top left */}
-                <SkiaText
-                  x={20}
-                  y={50}
-                  text={roundText}
-                  font={font}
-                  color="#FFFF00"
+            {/* Life indicator circles - top right */}
+            {lifeCircles.value.map((circle, index) => (
+              <Circle
+                key={circle.key}
+                cx={circle.x}
+                cy={circle.y}
+                r={8}
+                color="#FF4444"
+              >
+                {/* White border for better visibility */}
+                <Circle
+                  cx={0}
+                  cy={0}
+                  r={8}
+                  color="#FFFFFF"
+                  style="stroke"
+                  strokeWidth={2}
                 />
-                
-                {/* Score text - top center */}
-                <SkiaText
-                  x={width / 2 - 50}
-                  y={50}
-                  text={scoreText}
-                  font={font}
-                  color="#FFFF00"
-                />
-                
-                {/* Lives text - top right */}
-                <SkiaText
-                  x={width - 80}
-                  y={50}
-                  text={livesText}
-                  font={font}
-                  color="#FFFF00"
-                />
-              </>
-            )}
+              </Circle>
+            ))}
             
             {/* Game objects */}
             <Circle
