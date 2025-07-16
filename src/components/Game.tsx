@@ -12,14 +12,14 @@ import {
   useClock,
   vec,
   Skia,
-  Font,
   Text as SkiaText,
-  matchFont,
+  useFont,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
   useSharedValue,
   useFrameCallback,
+  runOnJS,
 } from 'react-native-reanimated';
 import {
   BRICK_HEIGHT,
@@ -114,35 +114,32 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 
 // Main Game component
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
+  const [fontsReady, setFontsReady] = useState(false);
+  
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
   
-  // Create fonts using matchFont for better web compatibility
-  const font = useMemo(() => {
-    try {
-      return matchFont({
-        fontFamily: Platform.OS === 'web' ? 'system-ui, -apple-system, sans-serif' : 'Inter-Regular',
-        fontSize: 16,
-        fontWeight: 'normal',
-      });
-    } catch (error) {
-      console.warn('Failed to create regular font, using fallback');
-      return null;
-    }
-  }, []);
+  // Load fonts with proper error handling
+  const regularFont = useFont(
+    Platform.OS === 'web' 
+      ? require('@expo-google-fonts/inter/Inter_400Regular.ttf')
+      : require('@expo-google-fonts/inter/Inter_400Regular.ttf'),
+    16
+  );
   
-  const boldFont = useMemo(() => {
-    try {
-      return matchFont({
-        fontFamily: Platform.OS === 'web' ? 'system-ui, -apple-system, sans-serif' : 'Inter-Bold',
-        fontSize: 16,
-        fontWeight: 'bold',
-      });
-    } catch (error) {
-      console.warn('Failed to create bold font, using fallback');
-      return null;
+  const boldFont = useFont(
+    Platform.OS === 'web'
+      ? require('@expo-google-fonts/inter/Inter_700Bold.ttf') 
+      : require('@expo-google-fonts/inter/Inter_700Bold.ttf'),
+    16
+  );
+  
+  // Check if fonts are ready
+  useEffect(() => {
+    if (regularFont && boldFont) {
+      setFontsReady(true);
     }
-  }, []);
+  }, [regularFont, boldFont]);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
@@ -637,57 +634,42 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
               <Brick key={idx} idx={idx} brick={brick} />
             ))}
             
-            {/* Skia Text components for real-time updates */}
-            {(font || boldFont) && (
+            {/* Skia Text components - only render when fonts are ready */}
+            {fontsReady && regularFont && boldFont && (
               <>
                 <SkiaText
                   x={20}
                   y={60}
                   text={roundText}
-                  font={font || boldFont}
+                  font={regularFont}
                   color="white"
                 />
                 <SkiaText
                   x={width / 2 - 40}
                   y={60}
                   text={scoreText}
-                  font={boldFont || font}
+                  font={boldFont}
                   color="white"
                 />
                 <SkiaText
                   x={width - 80}
                   y={60}
                   text={livesText}
-                  font={font || boldFont}
-                  color="#FF6B6B"
-                />
-              </>
-            )}
-            
-            {/* Fallback text rendering if fonts fail to load */}
-            {!font && !boldFont && (
-              <>
-                <SkiaText
-                  x={20}
-                  y={60}
-                  text={roundText}
-                  color="white"
-                />
-                <SkiaText
-                  x={width / 2 - 40}
-                  y={60}
-                  text={scoreText}
-                  color="white"
-                />
-                <SkiaText
-                  x={width - 80}
-                  y={60}
-                  text={livesText}
+                  font={regularFont}
                   color="#FF6B6B"
                 />
               </>
             )}
           </Canvas>
+          
+          {/* Fallback React Native Text overlay if Skia fonts aren't ready */}
+          {!fontsReady && (
+            <View style={styles.textOverlay}>
+              <Text style={styles.overlayText}>Round {round}</Text>
+              <Text style={styles.overlayText}>Score: {score.value}</Text>
+              <Text style={styles.overlayText}>Lives: {currentLives.value}</Text>
+            </View>
+          )}
         </View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -702,6 +684,21 @@ const styles = StyleSheet.create({
     height: height,
     alignSelf: 'center',
     aspectRatio: ASPECT_RATIO,
+  },
+  textOverlay: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    pointerEvents: 'none',
+  },
+  overlayText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
   },
 });
 
