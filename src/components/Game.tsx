@@ -13,6 +13,7 @@ import {
   vec,
   Skia,
   Text as SkiaText,
+  matchFont,
 } from '@shopify/react-native-skia';
 import {
   useDerivedValue,
@@ -115,6 +116,16 @@ const Brick = ({ idx, brick }: { idx: number; brick: BrickInterface }) => {
 const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibilityChange, lives, onLivesChange, extraBalls, onExtraBallsChange, speedBoostCount, difficulty, testMode }) => {
   // Initialize Skia-dependent values inside component - now safe since WithSkiaWeb ensures CanvasKit is loaded
   const resolution = useMemo(() => vec(width, height), []);
+  
+  // Create font using system font matching
+  const font = useMemo(() => {
+    return matchFont({
+      fontFamily: Platform.OS === 'ios' ? 'Helvetica' : 'Arial',
+      fontSize: 16,
+      fontStyle: 'normal',
+      fontWeight: 'bold',
+    });
+  }, []);
   
   // Create shader - now safe since CanvasKit is loaded
   const shader = useMemo(() => {
@@ -558,9 +569,44 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
       <GestureDetector gesture={gesture}>
         <View style={styles.gameContainer}>
           <Canvas style={{ flex: 1 }}>
+            {/* Background shader */}
             <Rect x={0} y={0} width={width} height={height}>
               <Shader source={shader} uniforms={uniforms} />
             </Rect>
+            
+            {/* Game UI Text - rendered within Skia Canvas */}
+            {font && (
+              <>
+                {/* Round text - top left */}
+                <SkiaText
+                  x={20}
+                  y={50}
+                  text={roundText}
+                  font={font}
+                  color="#FFFF00"
+                />
+                
+                {/* Score text - top center */}
+                <SkiaText
+                  x={width / 2 - 50}
+                  y={50}
+                  text={scoreText}
+                  font={font}
+                  color="#FFFF00"
+                />
+                
+                {/* Lives text - top right */}
+                <SkiaText
+                  x={width - 80}
+                  y={50}
+                  text={livesText}
+                  font={font}
+                  color="#FFFF00"
+                />
+              </>
+            )}
+            
+            {/* Game objects */}
             <Circle
               cx={circleObject.x}
               cy={circleObject.y}
@@ -613,16 +659,6 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
       </Canvas>
         </View>
       </GestureDetector>
-      
-      {/* Text overlay - outside GestureDetector to ensure it's on top */}
-      <View style={styles.textOverlay} pointerEvents="none">
-        {/* Game info at top */}
-        <View style={styles.gameInfo}>
-          <Text style={styles.gameText}>Round {round}</Text>
-          <Text style={styles.gameText}>Score: {currentScore}</Text>
-          <Text style={styles.gameText}>Lives: {currentLives.value}</Text>
-        </View>
-      </View>
     </GestureHandlerRootView>
   );
 };
@@ -634,35 +670,6 @@ const styles = StyleSheet.create({
     height: height,
     alignSelf: 'center',
     aspectRatio: ASPECT_RATIO,
-  },
-  textOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1000,
-    elevation: 1000,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  gameInfo: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-  },
-  gameText: {
-    fontSize: 16,
-    color: '#FFFF00',
-    fontWeight: 'bold',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
   },
 });
 
