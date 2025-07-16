@@ -38,7 +38,7 @@ export default function TabLayout() {
   }, [tabsVisible]);
   return (
     <TabVisibilityContext.Provider value={{ tabsVisible, setTabsVisible }}>
-      <View style={Platform.OS === 'web' ? styles.webContainer : styles.nativeContainer}>
+      <View style={styles.container}>
         <Tabs
           screenOptions={{
             headerShown: false,
@@ -84,19 +84,15 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  webContainer: {
+  container: {
     flex: 1,
     width: '100%',
     height: '100%',
-    maxWidth: Platform.OS === 'web' ? width : '100%',
-    maxHeight: Platform.OS === 'web' ? height : '100%',
+    maxWidth: width,
+    maxHeight: height,
     alignSelf: 'center',
     backgroundColor: '#000',
-    aspectRatio: Platform.OS === 'web' ? ASPECT_RATIO : undefined,
+    aspectRatio: ASPECT_RATIO,
     justifyContent: 'center',
-  },
-  nativeContainer: {
-    flex: 1,
-    backgroundColor: '#000',
   },
 });

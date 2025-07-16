@@ -2,51 +2,18 @@ import { Dimensions, Platform } from "react-native";
 
 // Fixed aspect ratio for consistent gameplay across all devices
 const FIXED_ASPECT_RATIO = 9 / 16; // Width to height ratio (mobile portrait)
-const MIN_WIDTH = 360; // Minimum width for gameplay
-const MIN_HEIGHT = MIN_WIDTH / FIXED_ASPECT_RATIO; // ~711
+
+// Fixed dimensions based on modern Android phone (e.g., Samsung Galaxy S24, Pixel 8)
+const ANDROID_PHONE_WIDTH = 360; // Standard Android dp width
+const ANDROID_PHONE_HEIGHT = 800; // Standard Android dp height
 
 // Web-compatible dimension handling with scalable fixed aspect ratio
 const getScreenDimensions = () => {
   if (Platform.OS === 'web') {
-    if (typeof window !== 'undefined') {
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      const maxWidth = Math.min(windowWidth * 0.95, 600); // Max 600px width or 95% of window
-      const maxHeight = windowHeight * 0.95; // 95% of window height
-      
-      // Calculate dimensions that fit within the window while maintaining fixed aspect ratio
-      let width, height;
-      
-      if (maxWidth / maxHeight > FIXED_ASPECT_RATIO) {
-        // Window is wider than target ratio, constrain by height
-        height = Math.max(maxHeight, MIN_HEIGHT);
-        width = height * FIXED_ASPECT_RATIO;
-        
-        // Ensure we meet minimum width requirement
-        if (width < MIN_WIDTH) {
-          width = MIN_WIDTH;
-          height = width / FIXED_ASPECT_RATIO;
-        }
-      } else {
-        // Window is taller than target ratio, constrain by width
-        width = Math.max(maxWidth, MIN_WIDTH);
-        height = width / FIXED_ASPECT_RATIO;
-        
-        // Ensure we meet minimum height requirement
-        if (height < MIN_HEIGHT) {
-          height = MIN_HEIGHT;
-          width = height * FIXED_ASPECT_RATIO;
-        }
-      }
-      
-      return {
-        width: Math.floor(width),
-        height: Math.floor(height),
-      };
-    }
+    // Use fixed Android phone dimensions for web to ensure consistent experience
     return {
-      width: MIN_WIDTH,
-      height: MIN_HEIGHT,
+      width: ANDROID_PHONE_WIDTH,
+      height: ANDROID_PHONE_HEIGHT,
     };
   }
   
@@ -59,22 +26,22 @@ const getScreenDimensions = () => {
   
   if (screenWidth / screenHeight > FIXED_ASPECT_RATIO) {
     // Screen is wider than target ratio, constrain by height
-    height = Math.max(screenHeight, MIN_HEIGHT);
+    height = Math.max(screenHeight, ANDROID_PHONE_HEIGHT);
     width = height * FIXED_ASPECT_RATIO;
     
     // Ensure we meet minimum width requirement
-    if (width < MIN_WIDTH) {
-      width = MIN_WIDTH;
+    if (width < ANDROID_PHONE_WIDTH) {
+      width = ANDROID_PHONE_WIDTH;
       height = width / FIXED_ASPECT_RATIO;
     }
   } else {
     // Screen is taller than target ratio, constrain by width
-    width = Math.max(screenWidth, MIN_WIDTH);
+    width = Math.max(screenWidth, ANDROID_PHONE_WIDTH);
     height = width / FIXED_ASPECT_RATIO;
     
     // Ensure we meet minimum height requirement
-    if (height < MIN_HEIGHT) {
-      height = MIN_HEIGHT;
+    if (height < ANDROID_PHONE_HEIGHT) {
+      height = ANDROID_PHONE_HEIGHT;
       width = height * FIXED_ASPECT_RATIO;
     }
   }
