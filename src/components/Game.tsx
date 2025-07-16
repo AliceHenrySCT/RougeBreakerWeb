@@ -579,26 +579,38 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
             </Circle>
             {/* Render extra balls */}
             {allExtraBalls.map((extraBall, index) => (
-              )
-              )
-              }
-              <Circle
-                key={`extra-${index}`}
-                cx={extraBall.x}
-                cy={extraBall.y}
-                r={RADIUS}
-                color="#FF6B6B" // Red color for extra balls to distinguish them
-              >
-                {/* Dark border */}
-                <Circle
-                  cx={0}
-                  cy={0}
-                  r={RADIUS}
-                  color="#374151"
-                  style="stroke"
-                  strokeWidth={2}
-                />
-              x={width / 2 - 50}
+          <Circle
+            key={`extra-${index}`}
+            cx={extraBall.x}
+            cy={extraBall.y}
+            r={RADIUS}
+            color="#FF6B6B" // Red color for extra balls to distinguish them
+          >
+            {/* Dark border */}
+            <Circle
+              cx={0}
+              cy={0}
+              r={RADIUS}
+              color="#374151"
+              style="stroke"
+              strokeWidth={2}
+            />
+          </Circle>
+        ))}
+        {/* Render paddle */}
+        <RoundedRect
+          x={rectangleObject.x}
+          y={rectangleObject.y}
+          width={adjustedPaddleWidth}
+          height={PADDLE_HEIGHT}
+          color="#6200EE"
+          r={8}
+        />
+        {/* Render bricks */}
+        {bricks.map((brick, idx) => (
+          <Brick key={idx} idx={idx} brick={brick} />
+        ))}
+      </Canvas>
         </View>
       </GestureDetector>
       
@@ -610,7 +622,7 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
         {/* Game info at top */}
         <View style={styles.gameInfo}>
           <Text style={styles.gameText}>Round {round}</Text>
-          <Text style={styles.gameText}>Score: {score.value}</Text>
+          <Text style={styles.gameText}>Score: {currentScore}</Text>
           <Text style={styles.gameText}>Lives: {currentLives.value}</Text>
         </View>
       </View>
@@ -621,21 +633,51 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
 const styles = StyleSheet.create({
   gameContainer: { 
     flex: 1, 
-    top: 0, 
-    left: 0,
     width: width,
     height: height,
+    alignSelf: 'center',
+    aspectRatio: ASPECT_RATIO,
+  },
+  textOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 1000,
-    elevation: 1000, // For Android
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 5,
+    elevation: 1000,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  testText: {
+    position: 'absolute',
+    top: height / 2,
+    left: width / 2 - 50,
+    fontSize: 24,
+    color: '#FF0000',
+    fontWeight: 'bold',
     backgroundColor: 'rgba(0,0,0,0.8)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    marginHorizontal: 4,
+  },
+  gameInfo: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  gameText: {
+    fontSize: 16,
+    color: '#FFFF00',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
   },
 });
 
