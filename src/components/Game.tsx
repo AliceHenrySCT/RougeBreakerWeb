@@ -556,7 +556,7 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
-        <View style={styles.container}>
+        <View style={styles.gameContainer}>
           <Canvas style={{ flex: 1 }}>
             <Rect x={0} y={0} width={width} height={height}>
               <Shader source={shader} uniforms={uniforms} />
@@ -595,66 +595,44 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
                   style="stroke"
                   strokeWidth={2}
                 />
-              </Circle>
-            ))}
-            <RoundedRect
-              x={rectangleObject.x}
-              y={rectangleObject.y}
-              width={rectangleObject.width}
-              height={rectangleObject.height}
-              color={'white'}
-              r={8}
-            />
-            {bricks.map((brick, idx) => (
-              <Brick key={idx} idx={idx} brick={brick} />
-            ))}
-            
-            {/* Debug test text in center */}
-            <SkiaText
               x={width / 2 - 50}
-              y={height / 2}
-              text="TEST TEXT"
-              color="red"
-              size={32}
-            />
-            
-            {/* Simple Skia Text with default font */}
-            <SkiaText
-              x={50}
-              y={100}
-              text={roundText}
-              color="yellow"
-              size={24}
-            />
-            <SkiaText
-              x={width / 2 - 50}
-              y={100}
-              text={scoreText}
-              color="yellow"
-              size={24}
-            />
-            <SkiaText
-              x={width - 120}
-              y={100}
-              text={livesText}
-              color="yellow"
-              size={24}
-            />
-          </Canvas>
         </View>
       </GestureDetector>
+      
+      {/* Text overlay - outside GestureDetector to ensure it's on top */}
+      <View style={styles.textOverlay} pointerEvents="none">
+        {/* Test text in center */}
+        <Text style={styles.testText}>TEST TEXT</Text>
+        
+        {/* Game info at top */}
+        <View style={styles.gameInfo}>
+          <Text style={styles.gameText}>Round {round}</Text>
+          <Text style={styles.gameText}>Score: {score.value}</Text>
+          <Text style={styles.gameText}>Lives: {currentLives.value}</Text>
+        </View>
+      </View>
     </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { 
+  gameContainer: { 
     flex: 1, 
-    backgroundColor: 'black',
+    top: 0, 
+    left: 0,
     width: width,
     height: height,
-    alignSelf: 'center',
-    aspectRatio: ASPECT_RATIO,
+    zIndex: 1000,
+    elevation: 1000, // For Android
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginHorizontal: 4,
   },
 });
 
