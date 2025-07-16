@@ -4,7 +4,7 @@ import { Dimensions, Platform } from "react-native";
 const FIXED_ASPECT_RATIO = 9 / 16; // Width to height ratio (mobile portrait)
 
 // Fixed dimensions based on modern Android phone (e.g., Samsung Galaxy S24, Pixel 8)
-const ANDROID_PHONE_WIDTH = 360; // Standard Android dp width
+const ANDROID_PHONE_WIDTH = 450; // 9:16 ratio width (800 * 9/16 = 450)
 const ANDROID_PHONE_HEIGHT = 800; // Standard Android dp height
 
 // Web-compatible dimension handling with scalable fixed aspect ratio
