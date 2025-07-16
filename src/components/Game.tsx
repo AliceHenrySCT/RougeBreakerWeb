@@ -616,9 +616,6 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
       
       {/* Text overlay - outside GestureDetector to ensure it's on top */}
       <View style={styles.textOverlay} pointerEvents="none">
-        {/* Test text in center */}
-        <Text style={styles.testText}>TEST TEXT</Text>
-        
         {/* Game info at top */}
         <View style={styles.gameInfo}>
           <Text style={styles.gameText}>Round {round}</Text>
@@ -648,18 +645,6 @@ const styles = StyleSheet.create({
     elevation: 1000,
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  testText: {
-    position: 'absolute',
-    top: height / 2,
-    left: width / 2 - 50,
-    fontSize: 24,
-    color: '#FF0000',
-    fontWeight: 'bold',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
   },
   gameInfo: {
     position: 'absolute',
