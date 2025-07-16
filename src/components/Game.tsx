@@ -609,27 +609,36 @@ const Game: React.FC<GameProps> = ({ onGameEnd, round, currentScore, onTabVisibi
               <Brick key={idx} idx={idx} brick={brick} />
             ))}
             
+            {/* Debug test text in center */}
+            <SkiaText
+              x={width / 2 - 50}
+              y={height / 2}
+              text="TEST TEXT"
+              color="red"
+              size={32}
+            />
+            
             {/* Simple Skia Text with default font */}
             <SkiaText
-              x={20}
-              y={60}
+              x={50}
+              y={100}
               text={roundText}
-              color="white"
-              size={16}
+              color="yellow"
+              size={24}
             />
             <SkiaText
-              x={width / 2 - 40}
-              y={60}
+              x={width / 2 - 50}
+              y={100}
               text={scoreText}
-              color="white"
-              size={16}
+              color="yellow"
+              size={24}
             />
             <SkiaText
-              x={width - 80}
-              y={60}
+              x={width - 120}
+              y={100}
               text={livesText}
-              color="#FF6B6B"
-              size={16}
+              color="yellow"
+              size={24}
             />
           </Canvas>
         </View>
