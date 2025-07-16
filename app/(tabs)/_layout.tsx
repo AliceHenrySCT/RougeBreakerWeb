@@ -86,18 +86,17 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   webContainer: {
     flex: 1,
-    width: Platform.OS === 'web' ? width : '100%',
-    height: Platform.OS === 'web' ? height : '100%',
-    maxWidth: width,
-    maxHeight: height,
+    width: '100%',
+    height: '100%',
+    maxWidth: Platform.OS === 'web' ? width : '100%',
+    maxHeight: Platform.OS === 'web' ? height : '100%',
     alignSelf: 'center',
     backgroundColor: '#000',
-    aspectRatio: ASPECT_RATIO,
+    aspectRatio: Platform.OS === 'web' ? ASPECT_RATIO : undefined,
+    justifyContent: 'center',
   },
   nativeContainer: {
     flex: 1,
     backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

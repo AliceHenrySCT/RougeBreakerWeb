@@ -2,7 +2,7 @@ import { Dimensions, Platform } from "react-native";
 
 // Fixed aspect ratio for consistent gameplay across all devices
 const FIXED_ASPECT_RATIO = 9 / 16; // Width to height ratio (mobile portrait)
-const MIN_WIDTH = 400; // Minimum width for gameplay
+const MIN_WIDTH = 360; // Minimum width for gameplay
 const MIN_HEIGHT = MIN_WIDTH / FIXED_ASPECT_RATIO; // ~711
 
 // Web-compatible dimension handling with scalable fixed aspect ratio
@@ -11,13 +11,15 @@ const getScreenDimensions = () => {
     if (typeof window !== 'undefined') {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
+      const maxWidth = Math.min(windowWidth * 0.95, 600); // Max 600px width or 95% of window
+      const maxHeight = windowHeight * 0.95; // 95% of window height
       
       // Calculate dimensions that fit within the window while maintaining fixed aspect ratio
       let width, height;
       
-      if (windowWidth / windowHeight > FIXED_ASPECT_RATIO) {
+      if (maxWidth / maxHeight > FIXED_ASPECT_RATIO) {
         // Window is wider than target ratio, constrain by height
-        height = Math.max(windowHeight, MIN_HEIGHT);
+        height = Math.max(maxHeight, MIN_HEIGHT);
         width = height * FIXED_ASPECT_RATIO;
         
         // Ensure we meet minimum width requirement
@@ -27,7 +29,7 @@ const getScreenDimensions = () => {
         }
       } else {
         // Window is taller than target ratio, constrain by width
-        width = Math.max(windowWidth, MIN_WIDTH);
+        width = Math.max(maxWidth, MIN_WIDTH);
         height = width / FIXED_ASPECT_RATIO;
         
         // Ensure we meet minimum height requirement
